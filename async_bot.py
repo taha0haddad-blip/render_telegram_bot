@@ -62,11 +62,14 @@ async def handle_media(update: Update, context):
     except Exception as e:
         print(f"Error: {e}")
 
-def main():
+async def main():
     app = Application.builder().token(TOKEN).build()
+    async with app:
+        await app.bot.delete_webhook()  # حذف webhook قبل البدء
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.PHOTO | filters.STICKER | filters.VIDEO | filters.ANIMATION, handle_media))
-    app.run_polling()  # استخدام polling بدلاً من webhook
+    await app.run_polling()
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())
