@@ -36,15 +36,19 @@ async def handle_media(update: Update, context):
         return
     user = msg.from_user.first_name
 
-    file_id = None
+    # تحديد نوع المحتوى
     if msg.photo:
         file_id = msg.photo[-1].file_id
+        print(f"📸 Photo from {user}")
     elif msg.sticker:
         file_id = msg.sticker.file_id
+        print(f"🎴 Sticker from {user}")
     elif msg.video:
         file_id = msg.video.file_id
+        print(f"🎥 Video from {user}")
     elif msg.animation:
         file_id = msg.animation.file_id
+        print(f"📹 GIF from {user}")
     else:
         return
 
@@ -54,16 +58,17 @@ async def handle_media(update: Update, context):
         if is_nsfw(url):
             await msg.delete()
             await msg.reply_text(f"⛔ Inappropriate content deleted from @{user}")
-            print("DELETED")
+            print("   🗑️ DELETED")
         else:
-            print("KEPT")
+            print("   ✅ KEPT")
     except Exception as e:
         print(f"Error: {e}")
 
 def main():
     app = Application.builder().token(TOKEN).build()
+    # نستخدم filters.ALL ونفحص داخل الدالة نوع المحتوى
+    app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO | filters.ANIMATION | filters.ALL, handle_media))
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.PHOTO | filters.STICKER | filters.VIDEO | filters.ANIMATION, handle_media))
     app.run_polling()
 
 if __name__ == "__main__":
