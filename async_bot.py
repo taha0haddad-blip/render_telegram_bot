@@ -4,7 +4,6 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, CommandHandler
 
 TOKEN = os.environ.get("BOT_TOKEN")
-
 if not TOKEN:
     raise ValueError("BOT_TOKEN not set")
 
@@ -36,7 +35,6 @@ async def handle_media(update: Update, context):
         return
     user = msg.from_user.first_name
 
-    # تحديد نوع المحتوى
     if msg.photo:
         file_id = msg.photo[-1].file_id
         print(f"📸 Photo from {user}")
@@ -66,10 +64,9 @@ async def handle_media(update: Update, context):
 
 def main():
     app = Application.builder().token(TOKEN).build()
-    # نستخدم filters.ALL ونفحص داخل الدالة نوع المحتوى
-    app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO | filters.ANIMATION | filters.ALL, handle_media))
     app.add_handler(CommandHandler("start", start))
-    app.run_polling()
+    app.add_handler(MessageHandler(filters.PHOTO | filters.STICKER | filters.VIDEO | filters.ANIMATION, handle_media))
+    app.run_polling()  # استخدام polling بدلاً من webhook
 
 if __name__ == "__main__":
     main()
